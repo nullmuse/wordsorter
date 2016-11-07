@@ -45,6 +45,39 @@ word = strtok(NULL," ");
 return retlen; 
 }
 
+char *smallest_word(char *wordlist) { 
+int len = strlen(wordlist) + 1;
+int retlen;
+char *word;
+char *retword = NULL;
+int wlen;
+char *sample = calloc(len, sizeof(char));
+memcpy(sample,wordlist,len-1);
+word = strtok(sample," ");
+retlen = strlen(word);
+retword = word;
+while(word[0] == 1) {
+word = strtok(NULL," ");
+if(word == NULL)
+return NULL;
+retword = word;
+retlen = strlen(word);
+}
+while(word != NULL) {
+if(word[0] != 1 || strlen(word) <= 0) {
+wlen = strlen(word);
+if(wlen < retlen)  {
+retlen = strlen(word);
+retword = word;
+}
+}
+word = strtok(NULL," ");
+}
+return retword;
+}
+
+
+
 
 void remap_wordlist(int index, char *qlist, char *wordlist, char *remapped) { 
 
@@ -176,7 +209,23 @@ return wordlist;
 
 char *sort_length(char *wordlist) { 
 
-return wordlist; 
+int lsize = strlen(wordlist) + 1;
+char *wordlist_copy = calloc(lsize,sizeof(char));
+char *word;
+char *modptr;
+char *wlpt = wordlist_copy; 
+word = smallest_word(wordlist); 
+while(word != NULL) { 
+memcpy(wlpt,word,strlen(word));
+wlpt[strlen(word)] = ' ';
+modptr = strstr(wordlist,wlpt);
+memset(modptr,1,strlen(word)); 
+wlpt += strlen(word); 
+wlpt++; 
+word = smallest_word(wordlist);
+}
+
+return wordlist_copy; 
 
 }
 
