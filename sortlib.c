@@ -140,7 +140,6 @@ int i;
 char *wordlist_copy = calloc(strlen(wordlist) + 1,sizeof(char));
 char *ws;
 char *word; 
-printf("%i\n",n);
 ws = sort_default(wordlist,0); 
 word = strtok(ws," ");
 strncpy(wordlist_copy,word,strlen(word));
@@ -185,6 +184,25 @@ return wordlist;
 
 char *sort_unique(char *wordlist) { 
 
-return wordlist; 
+
+char *wordlist_copy = calloc(strlen(wordlist) + 1,sizeof(char));
+char *wlpt = wordlist_copy;
+char *word; 
+char *modword;
+char *get;
+word = strtok(wordlist," ");
+while(word != NULL) {
+modword = calloc(strlen(word) + 2,sizeof(char));
+memcpy(modword,word,strlen(word));
+modword[strlen(word)] = ' ';
+get = strstr(wordlist_copy, modword);
+if(get == NULL) {
+memcpy(wlpt,modword,strlen(modword));
+wlpt += strlen(modword); 
+}
+free(modword);
+word = strtok(NULL," ");
+}
+return sort_default(wordlist_copy,0); 
 
 }
