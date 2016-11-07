@@ -1,4 +1,5 @@
 void help_message(void); 
+int transmute_char(char *subject);
 char *extract_words(char *filename); 
 char *sort_default(char *wordlist,int s_type);
 char *sort_trunc(char *wordlist, int n);

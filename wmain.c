@@ -3,19 +3,6 @@
 #include <stdlib.h>
 #include "ws.h"
 
-int transmute_char(char *subject) {
-   int len = strlen(subject) - 1;
-   int i,new = 0;
-
-   for(i = 1;len >= 0;--len,i *= 10) {
-      
-      if(subject[len] > 0x39 || subject[len] < 0x30) {
-         return 0;
-                                                     }
-      new += (subject[len] - 0x30) * i;
-                                     }
-   return new;
-}
 
 
 

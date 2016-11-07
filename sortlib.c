@@ -4,6 +4,23 @@
 
 
 
+int transmute_char(char *subject) {
+   int len = strlen(subject) - 1;
+   int i,new = 0;
+
+   for(i = 1;len >= 0;--len,i *= 10) {
+
+      if(subject[len] > 0x39 || subject[len] < 0x30) {
+         return -1;
+                                                     }
+      new += (subject[len] - 0x30) * i;
+                                     }
+   return new;
+}
+
+
+
+
 void character_harvest(int index, char *wordlist, char *container) {
 int i = 0;
 int len = strlen(wordlist) + 1;
@@ -20,28 +37,78 @@ container[i++] = word[safe_index];
 word = strtok(NULL," ");
 }
 
+free(sample); 
+return;
 
+}
+
+void number_harvest(int index, char *wordlist, char *container) {
+int i = 0;
+int a = 0;
+int c = 0;
+int len = strlen(wordlist) + 1;
+int numcheck;
+char *ch = calloc(2,sizeof(char));
+int safe_index;
+int wlen;
+char *sample = calloc(len, sizeof(char));
+char *word;
+char *wordnum;
+memcpy(sample,wordlist,len-1);
+word = strtok(sample," ");
+while(word != NULL) {
+wlen = strlen(word) - 1;
+safe_index = (wlen > index) ? index : 0;
+ch[0] = word[safe_index];
+numcheck = transmute_char(ch); 
+printf("%i %s\n",numcheck,ch);
+if(numcheck > -1) {
+wordnum = calloc(strlen(word),sizeof(char)); 
+for(a = safe_index; a < wlen + 1; ++a){
+ch[0] = word[a];
+numcheck = transmute_char(ch); 
+if(numcheck == -1)
+break;
+wordnum[c++] = word[a];
+}
+container[i++] = transmute_char(wordnum); 
+free(wordnum); 
+}
+else {
+if(word[safe_index] <= '9') { 
+word[safe_index] += 0x30; 
+}
+container[i++] = word[safe_index];
+}
+word = strtok(NULL," ");
+}
+
+free(ch);
 return;
 
 }
 
 
+
+
+
 int biggest_word(char *wordlist) { 
 
-int len = strlen(wordlist) + 1;
+int len = strlen(wordlist);
 int retlen = 0; 
 char *word; 
 int wlen; 
-char *sample = calloc(len, sizeof(char));
-memcpy(sample,wordlist,len-1);
+char *sample = calloc(len + 1, sizeof(char));
+memcpy(sample,wordlist,len);
 word = strtok(sample," ");
 while(word != NULL) {
 wlen = strlen(word); 
 if(wlen > retlen)  {
-retlen = strlen(word); 
+retlen = wlen; 
 }
 word = strtok(NULL," ");
 }
+free(sample);
 return retlen; 
 }
 
@@ -110,7 +177,7 @@ strncpy(rword,word,strlen(word));
 rword[strlen(word)] = ' ';
 remove = strstr(sample,rword);
 if(remove != NULL) {
-memset(remove,'^',strlen(word));
+memset(remove,1,strlen(word));
 }
 free(rword); 
 break;
@@ -137,6 +204,12 @@ return (*((char *)comp2) - *((char *)comp1));
 
 }
 
+int comp_func_c(const void *comp1, const void  *comp2) {
+
+
+return (transmute_char((char *)comp1) - transmute_char((char *)comp2));
+
+}
 
 
 
@@ -149,7 +222,7 @@ char *charsort = calloc(lsize,sizeof(char));
 char *sorted = calloc(lsize,sizeof(char));
 
 strncpy(wordlist_copy,wordlist,lsize - 1); 
-size = biggest_word(wordlist); 
+size = biggest_word(wordlist_copy); 
 
 for(;size > -1; size--) { 
 memset(sorted,0,lsize); 
@@ -160,10 +233,21 @@ qsort(charsort, strlen(charsort), sizeof(char), comp_func_a);
 if(s_type == 1) { 
 qsort(charsort, strlen(charsort), sizeof(char), comp_func_b);
 }
-remap_wordlist(size,charsort,wordlist_copy,sorted); 
-memcpy(wordlist_copy,sorted,lsize + 1); 
+if(s_type == 2) {
+number_harvest(size,wordlist_copy,charsort);
+printf("charsort %s\n",charsort);
+qsort(charsort, strlen(charsort), sizeof(char), comp_func_a);
+number_harvest(size,wordlist_copy,charsort);
+printf("%s\n",charsort);
 }
-return sorted;
+printf("wordlist_copy %s\n",wordlist_copy);
+remap_wordlist(size,charsort,wordlist_copy,sorted);
+printf("sorted: %s\n",sorted); 
+memcpy(wordlist_copy,sorted,lsize); 
+}
+free(charsort); 
+free(sorted); 
+return wordlist_copy;
 
 }
 
@@ -193,7 +277,9 @@ return wordlist;
 
 char *sort_number(char *wordlist) { 
 
-return wordlist; 
+
+
+return sort_default(wordlist,2);
 
 }
 

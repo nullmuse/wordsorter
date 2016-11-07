@@ -47,7 +47,8 @@ char *extract_words(char *filename) {
      if(wordlist[i] == '\r' || wordlist[i] == '\n')
          wordlist[i] = ' ';
   } 
-  wordlist[len] = ' ';
+  //wordlist[len] = ' ';
+  //strlen(wordlist);
   goto RETURN; 
 
   RETURN: 
