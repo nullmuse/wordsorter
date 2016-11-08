@@ -48,9 +48,8 @@
         strncat(wordlist_copy, " ", 2);
         strncat(wordlist_copy, word, strlen(word));
       }
+      free(ws);
       return wordlist_copy;
-
-      return wordlist;
 
     }
 
@@ -69,11 +68,7 @@
       number_harvest(wordlist_copy, numchars);
       qsort(numchars, size, sizeof(struct numchar), comp_func_c);
       remap_wordlist_numsort(size, numchars, sorted);
-      for(i = 0;i < size; ++i)strncpy(wordlist_copy, wordlist, lsize - 1);
-      character_harvest(0, wordlist_copy, charsort);
-      size = strlen(charsort);
-      numchars = calloc(size,sizeof(struct numchar));
-
+      for(i = 0; i < size; i++)
          free(numchars[i].word);
       free(wordlist_copy);
       free(numchars);
@@ -118,6 +113,7 @@
         free(word);
         word = smallest_word(wordlist_copy2);
       }
+      free(wordlist_copy2);
       return wordlist_copy;
 
     }
@@ -130,6 +126,7 @@
       int size;
       char * modword;
       char * get;
+      char * retlist; 
       word = strtok(wordlist, " ");
       while (word != NULL) {
         size = strlen(word);
@@ -144,6 +141,8 @@
         free(modword);
         word = strtok(NULL, " ");
       }
-      return sort_default(wordlist_copy, 0);
-
+    
+      retlist = sort_default(wordlist_copy, 0);
+      free(wordlist_copy); 
+      return retlist; 
     }

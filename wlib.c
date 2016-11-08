@@ -75,7 +75,7 @@
         memcpy(&nptr[i++],&num_char,sizeof(struct numchar));
         word = strtok(NULL, " ");
       }
-
+      free(sample);
       free(ch);
       return;
 

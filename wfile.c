@@ -10,7 +10,7 @@ char * extract_words(char * filename) {
   int wordlen = 0;
   char * filename_r = NULL;
   char * fileparse;
-  int argmx = 1024;
+  int argmx = 20000;
   int i, len,m;
   i = 0; 
   if(filename == NULL) {
