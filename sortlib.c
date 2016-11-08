@@ -61,19 +61,20 @@
       char * charsort = calloc(lsize, sizeof(char));
       char * sorted = calloc(lsize, sizeof(char));
       struct numchar *numchars;
-      struct numchar *numsave;
       strncpy(wordlist_copy, wordlist, lsize - 1);
       character_harvest(0, wordlist_copy, charsort);
       size = strlen(charsort);
       numchars = calloc(size,sizeof(struct numchar));
-      numsave = calloc(size,sizeof(struct numchar));
       memset(sorted, 0, lsize);
       number_harvest(wordlist_copy, numchars);
-      memcpy(numsave,numchars,size);
       qsort(numchars, size, sizeof(struct numchar), comp_func_c);
       remap_wordlist_numsort(size, numchars, sorted);
-      for(i = 0;i < size; ++i)
-         free(numsave[i].word);
+      for(i = 0;i < size; ++i)strncpy(wordlist_copy, wordlist, lsize - 1);
+      character_harvest(0, wordlist_copy, charsort);
+      size = strlen(charsort);
+      numchars = calloc(size,sizeof(struct numchar));
+
+         free(numchars[i].word);
       free(wordlist_copy);
       free(numchars);
       free(charsort);
@@ -81,8 +82,10 @@
     }
 
     char * sort_scrabble(char * wordlist) {
+      printf("not implemented\n"); 
+      printf("%s\n",wordlist); 
 
-      return wordlist;
+      return NULL;
 
     }
 
