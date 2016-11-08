@@ -71,13 +71,13 @@ int main(int argc, char * argv[]) {
   }
 
   END:
+  if(wordlist)
     printf("%s\n", wordlist);
+    free(wordlist);
   if (arglist)
     free(arglist);
   if (filename_list)
     free(filename_list);
-  if (wordlist)
-    free(wordlist);
   return 0;
 
 }
