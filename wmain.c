@@ -8,14 +8,13 @@ int main(int argc, char * argv[]) {
   int rbit = 0;
   int argsize = argc * 4;
   char * arglist;
-  char * argtok;
+  char * argtok = "a";
   char * argtok_r;
   char * filename_list = NULL;
   char * wordlist = NULL;
   char * sorted = NULL;
   if (argc == 1) {
-    help_message();
-    return 0;
+    goto STDIN;
   }
   arglist = calloc(argsize, sizeof(char));
   strncpy(arglist, argv[1], strlen(argv[1]));
@@ -27,15 +26,19 @@ int main(int argc, char * argv[]) {
     goto END;
   }
   argtok = strtok_r(arglist, "-", & argtok_r);
+  if(argtok[0] == '-' || argtok[0] == 'a') { 
+     filename_list = NULL;
+     goto STDIN;
+  }
   filename_list = calloc(strlen(argtok) + 1, sizeof(char));
   strncpy(filename_list, argtok, strlen(argtok));
+  argtok = strtok_r(NULL, "-", & argtok_r);
+  STDIN:
   wordlist = extract_words(filename_list);
   if (wordlist == NULL)
     goto END;
-  argtok = strtok_r(NULL, "-", & argtok_r);
   while (argtok != NULL) {
     switch (argtok[0]) {
-
     case 'a':
       sorted = sort_default(wordlist, 0);
       break;

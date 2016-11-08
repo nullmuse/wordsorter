@@ -8,10 +8,24 @@ char * extract_words(char * filename) {
   FILE * fp;
   char * wordlist = NULL;
   int wordlen = 0;
-  char * filename_r = calloc(strlen(filename) + 1, sizeof(char));
+  char * filename_r = NULL;
   char * fileparse;
-  int i, len;
-  i = 0;
+  int argmx = 1024;
+  int i, len,m;
+  i = 0; 
+  if(filename == NULL) {
+    m = 0;
+    wordlist = calloc(argmx,sizeof(char));
+    i = fgetc(stdin);
+    while(i != EOF) {
+      wordlist[m++] = i;
+      i = fgetc(stdin);
+    }
+   len = strlen(wordlist);
+   
+   goto STDIN;
+  } 
+  filename_r = calloc(strlen(filename) + 1, sizeof(char));
   strncpy(filename_r, filename, strlen(filename));
   fileparse = strtok(filename, ",");
   while (fileparse != NULL) {
@@ -41,11 +55,12 @@ char * extract_words(char * filename) {
     fclose(fp);
     fileparse = strtok(NULL, ",");
   }
-
   len = strlen(wordlist);
+  STDIN:
   for (i = 0; i < len; ++i) {
-    if (wordlist[i] == '\r' || wordlist[i] == '\n')
+    if (wordlist[i] == '\r' || wordlist[i] == '\n') {
       wordlist[i] = ' ';
+  }
   }
   goto RETURN;
 
