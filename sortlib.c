@@ -14,23 +14,15 @@
 
       for (; size > -1; size--) {
         memset(sorted, 0, lsize);
-        character_harvest(size, wordlist_copy, charsort);
         if (s_type == 0) {
+          character_harvest(size, wordlist_copy, charsort);
           qsort(charsort, strlen(charsort), sizeof(char), comp_func_a);
         }
         if (s_type == 1) {
+          character_harvest(size, wordlist_copy, charsort);
           qsort(charsort, strlen(charsort), sizeof(char), comp_func_b);
         }
-        if (s_type == 2) {
-          number_harvest(size, wordlist_copy, charsort);
-          printf("charsort %s\n", charsort);
-          qsort(charsort, strlen(charsort), sizeof(char), comp_func_a);
-          number_harvest(size, wordlist_copy, charsort);
-          printf("%s\n", charsort);
-        }
-        printf("wordlist_copy %s\n", wordlist_copy);
         remap_wordlist(size, charsort, wordlist_copy, sorted);
-        printf("sorted: %s\n", sorted);
         memcpy(wordlist_copy, sorted, lsize);
       }
       free(charsort);
@@ -63,9 +55,29 @@
     }
 
     char * sort_number(char * wordlist) {
-
-      return sort_default(wordlist, 2);
-
+      int size,i;
+      int lsize = strlen(wordlist) + 1;
+      char * wordlist_copy = calloc(lsize, sizeof(char));
+      char * charsort = calloc(lsize, sizeof(char));
+      char * sorted = calloc(lsize, sizeof(char));
+      struct numchar *numchars;
+      struct numchar *numsave;
+      strncpy(wordlist_copy, wordlist, lsize - 1);
+      character_harvest(0, wordlist_copy, charsort);
+      size = strlen(charsort);
+      numchars = calloc(size,sizeof(struct numchar));
+      numsave = calloc(size,sizeof(struct numchar));
+      memset(sorted, 0, lsize);
+      number_harvest(wordlist_copy, numchars);
+      memcpy(numsave,numchars,size);
+      qsort(numchars, size, sizeof(struct numchar), comp_func_c);
+      remap_wordlist_numsort(size, numchars, sorted);
+      for(i = 0;i < size; ++i)
+         free(numsave[i].word);
+      free(wordlist_copy);
+      free(numchars);
+      free(charsort);
+      return sorted;
     }
 
     char * sort_scrabble(char * wordlist) {

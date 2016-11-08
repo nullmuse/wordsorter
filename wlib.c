@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include "ws.h"
 
   int transmute_char(char * subject) {
     int len = strlen(subject) - 1;
@@ -8,9 +9,8 @@
     for (i = 1; len >= 0; --len, i *= 10) {
       if (subject[len] > 0x39 || subject[len] < 0x30) {
         return -1;
-        new += (subject[len] - 0x30) * i;
-
       }
+        new += (subject[len] - 0x30) * i;
       }
       return new;
     }
@@ -36,43 +36,43 @@
 
     }
 
-    void number_harvest(int index, char * wordlist, char * container) {
-      int i = 0;
+    void number_harvest(char * wordlist, struct numchar * container) {
       int a = 0;
-      int c = 0;
+      int i = 0;
       int len = strlen(wordlist) + 1;
       int numcheck;
       char * ch = calloc(2, sizeof(char));
-      int safe_index;
+      struct numchar num_char; 
+      char *numword;
       int wlen;
       char * sample = calloc(len, sizeof(char));
       char * word;
       char * wordnum;
+      struct numchar *nptr = container;
       memcpy(sample, wordlist, len - 1);
       word = strtok(sample, " ");
       while (word != NULL) {
-        wlen = strlen(word) - 1;
-        safe_index = (wlen > index) ? index : 0;
-        ch[0] = word[safe_index];
+        wlen = strlen(word);
+        ch[0] = word[0];
         numcheck = transmute_char(ch);
-        printf("%i %s\n", numcheck, ch);
         if (numcheck > -1) {
           wordnum = calloc(strlen(word), sizeof(char));
-          for (a = safe_index; a < wlen + 1; ++a) {
+          for (a = 0; a < wlen + 1; ++a) {
             ch[0] = word[a];
             numcheck = transmute_char(ch);
             if (numcheck == -1)
               break;
-            wordnum[c++] = word[a];
+            wordnum[a] = word[a];
           }
-          container[i++] = transmute_char(wordnum);
+          num_char.number = transmute_char(wordnum);
           free(wordnum);
         } else {
-          if (word[safe_index] <= '9') {
-            word[safe_index] += 0x30;
-          }
-          container[i++] = word[safe_index];
-        }
+          num_char.number = 0; 
+        }  
+        numword = calloc(wlen + 1,sizeof(char)); 
+        strncpy(numword,word,wlen); 
+        num_char.word = numword; 
+        memcpy(&nptr[i++],&num_char,sizeof(struct numchar));
         word = strtok(NULL, " ");
       }
 
@@ -188,24 +188,47 @@
       return;
     }
 
-    int comp_func_a(const void * comp1,
-      const void * comp2) {
+void remap_wordlist_numsort(int index, struct numchar * qlist, char * remapped) {
+
+      int i;
+      int wlen;
+      struct numchar num_char; 
+      char * rempt = remapped;
+      rempt[0] = ' ';
+      rempt++;
+      for (i = 0; i < index; ++i) {
+         num_char = qlist[i];
+         if(num_char.word == NULL) {
+            continue;
+         }
+         wlen = strlen(num_char.word);
+         memcpy(rempt,num_char.word,wlen);
+         free(num_char.word);
+         rempt[wlen] = ' ';
+         rempt += wlen + 1;
+      }
+
+}
+      
+
+    int comp_func_a(const void * comp1,const void * comp2) {
 
       return ( * ((char * ) comp1) - * ((char * ) comp2));
 
     }
 
-    int comp_func_b(const void * comp1,
-      const void * comp2) {
+    int comp_func_b(const void * comp1,const void * comp2) {
 
       return ( * ((char * ) comp2) - * ((char * ) comp1));
 
     }
 
-    int comp_func_c(const void * comp1,
-      const void * comp2) {
+    int comp_func_c(const void * comp1,const void * comp2) {
 
-      return (transmute_char((char * ) comp1) - transmute_char((char * ) comp2));
+       struct numchar *nc1 = (struct numchar *) comp1;
+       struct numchar *nc2 = (struct numchar *) comp2;
+       return nc1->number - nc2->number;
+
 
     }
 

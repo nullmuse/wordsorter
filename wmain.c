@@ -56,7 +56,6 @@ int main(int argc, char * argv[]) {
       break;
     case 'l':
       sorted = sort_length(wordlist);
-      printf("here\n");
       break;
     case 'u':
       sorted = sort_unique(wordlist);
@@ -77,10 +76,8 @@ int main(int argc, char * argv[]) {
     free(arglist);
   if (filename_list)
     free(filename_list);
-  printf("attempting wordlist free\n");
   if (wordlist)
     free(wordlist);
-  printf("Success\n");
   return 0;
 
 }
