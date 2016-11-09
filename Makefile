@@ -1,5 +1,5 @@
 CFLAGS = -Wall -Werror
-OBJS = wmain.o help.o 
+OBJS = help.o wmain.o 
 
 
 all: ws
