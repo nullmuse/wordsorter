@@ -1,5 +1,5 @@
-CFLAGS = -Wall -Werror
-OBJS = help.o wmain.o 
+CFLAGS = -Wall -Wextra
+OBJS = help.o wfile.o wmain.o 
 
 
 all: ws
