@@ -51,6 +51,7 @@ int main(int argc, char *argv[]) {
      goto END; 
   printf("%s\n",wordlist); 
   argtok = strtok_r(NULL,"-",&argtok_r);
+  printf("%s\n",argtok);
   while(argtok != NULL) { 
      switch(argtok[0]) { 
          
@@ -58,7 +59,8 @@ int main(int argc, char *argv[]) {
             sorted = sort_default(wordlist); 
             break; 
         case 'c':
-            n = transmute_char(argtok + 1); 
+            argtok++;
+            n = transmute_char(argtok); 
             sorted = sort_trunc(wordlist,n); 
             break; 
         case 'r':
