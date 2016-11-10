@@ -23,6 +23,7 @@ int transmute_char(char *subject) {
 
 int main(int argc, char *argv[]) { 
    int i,n;
+   int rbit = 0; 
    int argsize = argc * 4;    
    char *arglist;
    char *argtok;
@@ -49,14 +50,12 @@ int main(int argc, char *argv[]) {
   wordlist = extract_words(filename_list);
   if(wordlist == NULL) 
      goto END; 
-  printf("%s\n",wordlist); 
   argtok = strtok_r(NULL,"-",&argtok_r);
-  printf("%s\n",argtok);
-  while(argtok != NULL) { 
+  while(argtok != NULL) {
      switch(argtok[0]) { 
-         
+
         case 'a':
-            sorted = sort_default(wordlist); 
+            sorted = sort_default(wordlist,0); 
             break; 
         case 'c':
             argtok++;
@@ -64,7 +63,8 @@ int main(int argc, char *argv[]) {
             sorted = sort_trunc(wordlist,n); 
             break; 
         case 'r':
-            sorted = sort_reverse(wordlist); 
+            rbit = !rbit; 
+            sorted = sort_default(wordlist,rbit);  
             break; 
         case 'n':
             sorted = sort_number(wordlist); 
@@ -82,14 +82,15 @@ int main(int argc, char *argv[]) {
             printf("%s is not a valid flag\n",argtok); 
             help_message(); 
             goto END; 
-    } 
-            
+    }
      argtok = strtok_r(NULL, "-",&argtok_r); 
-  } 
+     free(wordlist);
+     wordlist = sorted; 
+   } 
 
 
    END:
-   printf("%s\n",sorted); 
+   printf("%s\n",wordlist); 
    if(arglist)
    free(arglist); 
    if(filename_list)
