@@ -5,7 +5,7 @@ void help_message(void) {
 
    printf("\
 ws: word-sorting command-line utility\n\
-ws filename [-c] <n> [-r] [-n] [-l] [-s] [-a] [-u] [-h]\n\n\
+ws filename[,filename1,filename2,...] [-c] <n> [-r] [-n] [-l] [-s] [-a] [-u] [-h]\n\n\
 -c <n>: Print the first n results of the sorted list of words\n\
 -r: Print word list in reverse order\n\
 -n: Sort words as if they were numbers\n\

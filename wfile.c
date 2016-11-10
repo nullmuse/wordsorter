@@ -6,33 +6,54 @@
 char *extract_words(char *filename) { 
    struct stat file_info;
    FILE *fp;
-   char *wordlist;
+   char *wordlist = NULL;
+   int wordlen = 0; 
+   char *filename_r = calloc(strlen(filename) + 1,sizeof(char)); 
+   char *fileparse; 
    int i,len;  
-   
-   if(stat(filename,&file_info) == -1) { 
+   i = 0; 
+   strncpy(filename_r,filename,strlen(filename)); 
+   fileparse = strtok(filename,","); 
+   while(fileparse != NULL) {  
+   if(stat(fileparse,&file_info) == -1) { 
        perror("FATAL: file does not exist");
-       return NULL;
+       goto RETURN;
    }
-
-   
    if(file_info.st_size <= 0) { 
       perror("FATAL: wordlist is empty file");
-      return NULL;
+      goto RETURN; 
    }
-   wordlist = calloc(file_info.st_size + 1, sizeof(char)); 
+   wordlen += file_info.st_size + 1; 
+   fileparse = strtok(NULL,","); 
+} 
 
-   if ((fp = fopen(filename, "r")) == NULL) {
+   wordlist = calloc(wordlen, sizeof(char)); 
+   wordlen = 0; 
+  fileparse = strtok(filename_r,",");
+  while(fileparse != NULL) {
+  stat(fileparse,&file_info); 
+   if ((fp = fopen(fileparse, "r")) == NULL) {
      perror("FATAL: cannot open file");
-     return NULL; 
+     goto RETURN; 
 }
-  fread(wordlist, sizeof(char), file_info.st_size, fp);
+  wordlen = fread((wordlist + wordlen), sizeof(char), file_info.st_size, fp);
   
   fclose(fp);
+  fileparse = strtok(NULL,",");
+  } 
+
   len = strlen(wordlist);  
   for(i=0;i<len;++i) { 
      if(wordlist[i] == '\r' || wordlist[i] == '\n')
          wordlist[i] = ' ';
   } 
-  return wordlist; 
+
+  goto RETURN; 
+
+  RETURN: 
+  if(filename_r)
+     free(filename_r); 
+  return wordlist;
+
 
 }
