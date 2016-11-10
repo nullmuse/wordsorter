@@ -12,8 +12,8 @@ int main(int argc, char *argv[]) {
    }
    char *arglist = calloc(argsize, sizeof(char)); 
    char *argtok;
-   char *filename;   
-   char *wordlist; 
+   char *filename = NULL;
+   char *wordlist = NULL; 
    strncpy(arglist,argv[1],strlen(argv[1])); 
    for(i = 2; i < argc; ++i) {
       strncat(arglist,argv[i],strlen(argv[i])); 
@@ -37,8 +37,11 @@ int main(int argc, char *argv[]) {
 
 
    END:
+   if(arglist)
    free(arglist); 
+   if(filename)
    free(filename); 
+   if(wordlist)
    free(wordlist); 
    return 0; 
 
