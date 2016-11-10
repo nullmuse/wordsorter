@@ -4,18 +4,19 @@
 
 
 
-void character_harvest(char *wordlist, char *container) {
-
+void character_harvest(int index, char *wordlist, char *container) {
 int i = 0;
 int len = strlen(wordlist) + 1;
-
+int safe_index;
+int wlen;  
 char *sample = calloc(len, sizeof(char));
 char *word;
 memcpy(sample,wordlist,len-1);
-
 word = strtok(sample," ");
 while(word != NULL) {
-container[i++] = word[0];
+wlen = strlen(word) - 1; 
+safe_index = (wlen > index) ? index : 0;
+container[i++] = word[safe_index];
 word = strtok(NULL," ");
 }
 
@@ -24,38 +25,78 @@ return;
 
 }
 
-void remap_wordlist(char *qlist, char *wordlist, char *remapped) { 
+
+int biggest_word(char *wordlist) { 
+
+int len = strlen(wordlist) + 1;
+int retlen = 0; 
+char *word; 
+int wlen; 
+char *sample = calloc(len, sizeof(char));
+memcpy(sample,wordlist,len-1);
+word = strtok(sample," ");
+while(word != NULL) {
+wlen = strlen(word); 
+if(wlen > retlen)  {
+retlen = strlen(word); 
+}
+word = strtok(NULL," ");
+}
+return retlen; 
+}
+
+
+void remap_wordlist(int index, char *qlist, char *wordlist, char *remapped) { 
 
 int i,wl;
 int n = 0; 
 int len = strlen(qlist);
-printf("qlist len %i, wordlist len %i\n",len,strlen(wordlist));  
+int safe_index; 
+int wlen; 
+//printf("wordlist len %i\n",strlen(wordlist));  
 char *sample = calloc(strlen(wordlist) + 1, sizeof(char));
 char *sample_r = calloc(strlen(wordlist) + 1, sizeof(char));
 char *word;
+char *rword;
 char *remove;
 char *rempt = remapped;  
 memcpy(sample,wordlist,strlen(wordlist) - 1);
 for(i = 0; i < len; ++i) { 
-memcpy(sample_r,sample,strlen(sample) - 1);
+memcpy(sample_r,sample,strlen(sample));
+printf("sample: %s\n",sample_r); 
 word = strtok(sample_r," "); 
-while(word != NULL) { 
-if(word[0] == qlist[i]) {
-wl = strlen(word);  
-memcpy(rempt,word,wl);
-printf("word %s\n",word);
-printf("locaton %s\n",rempt);  
-rempt += wl;
+while(word != NULL) {
+printf("%s\n",word);
+wlen = strlen(word) - 1; 
+safe_index = (wlen > index) ? index : 0; 
+if(word[safe_index] == qlist[i]) {
+memcpy(rempt,word,strlen(word));
+while(*rempt != 0) {
+rempt++;
+}
 *rempt = ' ';
-rempt += sizeof(char);
-remove = strstr(sample,word);
-memset(remove,'^',wl);
+rempt += 1;
+//printf("%s\n",remapped); 
+//*rempt = ' ';
+rword = calloc(strlen(word) + 2,sizeof(char));
+strncpy(rword,word,strlen(word)); 
+rword[strlen(word)] = ' ';
+remove = strstr(sample,rword);
+if(remove != NULL) {
+memset(remove,'^',strlen(word));
+}
+free(rword); 
+break;
 }
 word = strtok(NULL," ");
 }
 free(sample_r); 
 sample_r = calloc(strlen(wordlist) + 1, sizeof(char));
 }
+//*rempt = 0; 
+//printf("ret wordlist len %i\n",strlen(remapped));
+free(sample); 
+free(sample_r); 
 return; 
 }
 
@@ -69,20 +110,25 @@ return (*((char *)comp1) - *((char *)comp2));
 
 
 char *sort_default(char *wordlist) { 
+int lsize = strlen(wordlist) + 1; 
+char *wordlist_copy = calloc(lsize,sizeof(char));
+char *charsort = calloc(lsize,sizeof(char)); 
+char *sorted = calloc(lsize,sizeof(char));
 
-char *charsort = calloc(strlen(wordlist) + 1,sizeof(char)); 
-char *sorted = calloc(strlen(wordlist) + 1,sizeof(char));
+strncpy(wordlist_copy,wordlist,lsize - 1); 
+int size = biggest_word(wordlist); 
 
-character_harvest(wordlist,charsort); 
-
-printf("char sort presort %s length %i\n",charsort, strlen(charsort)); 
+for(;size > -1; size--) { 
+printf("SIZE IS %i\n",size); 
+memset(sorted,0,lsize); 
+character_harvest(size,wordlist_copy,charsort); 
+printf("harvest: %s\n",charsort); 
 qsort(charsort, strlen(charsort), sizeof(char), comp_func_a);
-printf("char sort post-sort %s\n",charsort); 
-printf("wordlist %s\n",wordlist); 
-remap_wordlist(charsort,wordlist,sorted); 
-
-
-
+printf("pre:(%s)\n",wordlist_copy);
+remap_wordlist(size,charsort,wordlist_copy,sorted); 
+memcpy(wordlist_copy,sorted,lsize + 1); 
+printf("post:(%s)\n",wordlist_copy); 
+}
 return sorted;
 
 }
