@@ -1,5 +1,5 @@
-CFLAGS = -Wall -Wextra
-OBJS = help.o wfile.o wmain.o 
+CFLAGS = -Wall -Wextra -pedantic
+OBJS = help.o sortlib.o wfile.o wmain.o 
 
 
 all: ws
